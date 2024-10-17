@@ -2,7 +2,7 @@
 async function fetchSongs() {
     const response = await fetch('https://setlistaccess.azurewebsites.net/api/setlistaccess?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D');
     const songs = await response.json();
-    displaySongs(songs);
+    return songs;
 }
 
 // Display the songs in a list that supports drag-and-drop reordering
@@ -16,6 +16,10 @@ function displaySongs(songs) {
         listItem.setAttribute('data-id', index); // Use index as unique identifier
         listItem.textContent = `${song.song_name} - ${song.artist} (${song.length} min, ${song.release_year})`;
         setlist.appendChild(listItem);
+
+        const songs = [
+            { song_name: 'Song 1', artist: 'Artist 1', length: 3, release_year: 2020 },
+
     });
 
     // Initialize Sortable.js to allow drag-and-drop reordering

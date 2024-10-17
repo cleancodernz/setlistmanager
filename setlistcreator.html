@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setlist Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        .song-tile {
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .song-container {
+            margin-bottom: 30px;
+        }
+
+        .tile-container {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .setlist {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        @media print {
+            .pagebreak { 
+                page-break-before: always; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Setlist Manager</h1>
+
+    <div class="input-group">
+        <label for="venue">Venue Name:</label>
+        <input type="text" id="venue" />
+    </div>
+
+    <div class="input-group">
+        <label for="band">Band Name:</label>
+        <input type="text" id="band" />
+    </div>
+
+    <div class="input-group">
+        <label for="date">Gig Date:</label>
+        <input type="date" id="date" />
+    </div>
+
+    <div class="input-group">
+        <label for="numSets">Number of Sets:</label>
+        <input type="number" id="numSets" value="1" />
+    </div>
+
+    <div class="song-container">
+        <h2>Song List</h2>
+        <div class="tile-container" id="tileContainer">
+            <!-- Song tiles will be injected here -->
+        </div>
+    </div>
+
+    <button class="btn" id="generatePdf">Generate PDF</button>
+
+    <div id="setlistOutput" class="setlist"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+    <div id="setlist-container">
+        <ul id="setlist" class="song-list">
+            <!-- Songs will be dynamically loaded here -->
+        </ul>
+    </div>
+    <button id="save-setlist">Save Setlist Order</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="src/setlist.js"></script>
+
+    <script>
+        // Song data array
+        const songs = fetchSongs();
+        // const songs = [
+        //     { song_name: 'Song 1', artist: 'Artist 1', length: 3, release_year: 2020 },
+        //     { song_name: 'Song 2', artist: 'Artist 2', length: 4, release_year: 2019 },
+        //     { song_name: 'Song 3', artist: 'Artist 3', length: 5, release_year: 2018 },
+        //     { song_name: 'Song 4', artist: 'Artist 4', length: 6, release_year: 2021 },
+        //     { song_name: 'Song 5', artist: 'Artist 5', length: 4, release_year: 2017 },
+        //     { song_name: 'Song 6', artist: 'Artist 6', length: 5, release_year: 2022 },
+        //     { song_name: 'Song 7', artist: 'Artist 7', length: 3, release_year: 2021 },
+        //     { song_name: 'Song 8', artist: 'Artist 8', length: 6, release_year: 2016 },
+        //     { song_name: 'Song 9', artist: 'Artist 9', length: 4, release_year: 2020 },
+        //     { song_name: 'Song 10', artist: 'Artist 10', length: 5, release_year: 2015 },
+        //     { song_name: 'Song 11', artist: 'Artist 11', length: 3, release_year: 2023 },
+        //     { song_name: 'Song 12', artist: 'Artist 12', length: 4, release_year: 2019 },
+        //     { song_name: 'Song 13', artist: 'Artist 13', length: 6, release_year: 2018 },
+        //     { song_name: 'Song 14', artist: 'Artist 14', length: 5, release_year: 2021 },
+        //     { song_name: 'Song 15', artist: 'Artist 15', length: 4, release_year: 2020 }
+        // ];
+
+        // Generate song tiles
+        const tileContainer = document.getElementById('tileContainer');
+        songs.forEach((song, index) => {
+            const songTile = document.createElement('div');
+            songTile.classList.add('song-tile');
+            songTile.dataset.index = index;
+            songTile.textContent = `${song.song_name} - ${song.artist} (${song.length} min, ${song.release_year})`;
+            tileContainer.appendChild(songTile);
+        });
+
+        // Make the song tiles sortable using Sortable.js
+        const sortable = new Sortable(tileContainer, {
+            animation: 150,
+            onEnd: function () {
+                console.log("Order has been changed");
+            }
+        });
+
+        // Generate PDF
+        document.getElementById('generatePdf').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const venue = document.getElementById('venue').value;
+            const band = document.getElementById('band').value;
+            const date = document.getElementById('date').value;
+            const numSets = parseInt(document.getElementById('numSets').value);
+
+            // Get the song tiles in their current order
+            const orderedTiles = Array.from(document.querySelectorAll('.song-tile'));
+            const orderedSongs = orderedTiles.map(tile => tile.textContent);
+
+            let currentSet = 1;
+            let songCounter = 0;
+
+            for (let i = 0; i < orderedSongs.length; i++) {
+                if (i % 12 === 0 && i !== 0) {
+                    doc.addPage(); // Add new page for each set
+                    songCounter = 0;
+                    currentSet++;
+                }
+
+                if (songCounter === 0) {
+                    doc.text(`Set ${currentSet}`, 10, 10);
+                    doc.text(`Venue: ${venue}`, 10, 20);
+                    doc.text(`Band: ${band}`, 10, 30);
+                    doc.text(`Date: ${date}`, 10, 40);
+                }
+
+                doc.text(`${i + 1}. ${orderedSongs[i]}`, 10, 50 + songCounter * 10);
+                songCounter++;
+            }
+
+            // Save the PDF
+            doc.save('setlist.pdf');
+        });
+    </script>
+</body>
+</html>
