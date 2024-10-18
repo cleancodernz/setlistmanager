@@ -4,7 +4,7 @@ async function fetchSongs() {
     const response = await fetch('https://setlistaccess.azurewebsites.net/api/setlistaccess?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D');
     const songs = await response.json();
     alert('fetching songs' + songs);
-    return songs;
+    displaySongs(songs);
 }
 
 // Display the songs in a list that supports drag-and-drop reordering
