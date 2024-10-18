@@ -6,31 +6,31 @@ async function fetchSongs() {
 }
 
 // Display the songs in a list that supports drag-and-drop reordering
-function displaySongs(songs) {
-    const setlist = document.getElementById('setlist');
-    setlist.innerHTML = ''; // Clear the list
+// function displaySongs(songs) {
+//     const setlist = document.getElementById('setlist');
+//     setlist.innerHTML = ''; // Clear the list
 
-    songs.forEach((song, index) => {
-        const listItem = document.createElement('li');
-        listItem.className = 'song-item';
-        listItem.setAttribute('data-id', index); // Use index as unique identifier
-        listItem.textContent = `${song.song_name} - ${song.artist} (${song.length} min, ${song.release_year})`;
-        setlist.appendChild(listItem);
+//     songs.forEach((song, index) => {
+//         const listItem = document.createElement('li');
+//         listItem.className = 'song-item';
+//         listItem.setAttribute('data-id', index); // Use index as unique identifier
+//         listItem.textContent = `${song.song_name} - ${song.artist} (${song.length} min, ${song.release_year})`;
+//         setlist.appendChild(listItem);
 
-        const songs = [
-            { song_name: 'Song 1', artist: 'Artist 1', length: 3, release_year: 2020 },
+//         const songs = [
+//             { song_name: 'Song 1', artist: 'Artist 1', length: 3, release_year: 2020 },
 
-    });
+//     });
 
-    // Initialize Sortable.js to allow drag-and-drop reordering
-    Sortable.create(setlist, {
-        animation: 150, // Animation speed in ms when moving items
-        onEnd: function (/**Event*/evt) {
-            // Logic after the song order has been changed
-            console.log('New order:', getCurrentSetlistOrder());
-        }
-    });
-}
+//     // Initialize Sortable.js to allow drag-and-drop reordering
+//     Sortable.create(setlist, {
+//         animation: 150, // Animation speed in ms when moving items
+//         onEnd: function (/**Event*/evt) {
+//             // Logic after the song order has been changed
+//             console.log('New order:', getCurrentSetlistOrder());
+//         }
+//     });
+// }
 
 // Get the current order of the setlist based on the DOM
 function getCurrentSetlistOrder() {
