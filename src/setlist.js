@@ -28,19 +28,5 @@ function displaySongs(songs) {
     });
 }
 
-// Get the current order of the setlist based on the DOM
-function getCurrentSetlistOrder() {
-    const setlistItems = document.querySelectorAll('#setlist .song-item');
-    const orderedSongs = Array.from(setlistItems).map((item) => item.textContent);
-    return orderedSongs;
-}
-
-// Save the reordered setlist (for demonstration, logs the result)
-document.getElementById('savesetlist').addEventListener('click', () => {
-    const reorderedSetlist = getCurrentSetlistOrder();
-    console.log('Setlist saved:', reorderedSetlist);
-    // You can send this reordered setlist back to your Azure Function or save it in local storage
-});
-
 // Initialize the song fetching when the page loads
 window.onload = fetchSongs;
