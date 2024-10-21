@@ -28,13 +28,22 @@
         .song-tile, .page-break-tile {
             padding: 10px;
             margin-bottom: 5px;
-            background-color: #f0f0f0;
             border: 1px solid #ddd;
             cursor: grab;
             display: flex;
             justify-content: space-between;
             width: 50%;
             margin: 0 auto;
+        }
+
+        .song-tile {
+            background-color: #f0f0f0;
+        }
+
+        .page-break-tile {
+            background-color: #ffcccb;
+            font-style: italic;
+            text-align: center;
         }
 
         .song-container {
@@ -74,12 +83,6 @@
         .duration {
             font-weight: bold;
             margin-top: 10px;
-        }
-
-        .page-break-tile {
-            background-color: #d0d0d0;
-            font-style: italic;
-            text-align: center;
         }
 
         @media print {
@@ -172,7 +175,7 @@
                 tileContainer.appendChild(songTile);
             });
 
-            // Add initial page break tiles after every 12 songs
+            // Add initial page break tile after every 12 songs
             for (let i = 12; i < songs.length; i += 12) {
                 const pageBreakTile = document.createElement('div');
                 pageBreakTile.classList.add('page-break-tile');
@@ -201,4 +204,56 @@
 
             const orderedTiles = Array.from(document.querySelectorAll('.song-tile, .page-break-tile'));
             orderedTiles.forEach((tile, index) => {
-                if (tile.classList.contains('song-t
+                if (tile.classList.contains('song-tile')) {
+                    totalDuration += parseInt(tile.dataset.length);
+                } else if (tile.classList.contains('page-break-tile') || index === orderedTiles.length - 1) {
+                    console.log(`Set ${setCounter}: Total Duration: ${totalDuration} minutes`);
+                    const durationElement = document.createElement('div');
+                    durationElement.classList.add('duration');
+                    durationElement.textContent = `Set ${setCounter}: Total Duration: ${totalDuration} minutes`;
+                    tileContainer.insertBefore(durationElement, tile.nextSibling);
+                    setCounter++;
+                    totalDuration = 0;  // Reset duration for the next set
+                }
+            });
+        }
+
+        // Generate PDF
+        document.getElementById('generatePdf').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const venue = document.getElementById('venue').value;
+            const band = document.getElementById('band').value;
+            const date = document.getElementById('date').value;
+
+            const orderedTiles = Array.from(document.querySelectorAll('.song-tile, .page-break-tile'));
+
+            doc.setFontSize(18);
+            doc.text(`Venue: ${venue}`, 10, 10);
+            doc.text(`Band: ${band}`, 10, 20);
+            doc.text(`Gig Date: ${date}`, 10, 30);
+
+            let y = 40;
+            orderedTiles.forEach((tile, index) => {
+                if (y > 270) {
+                    doc.addPage();
+                    y = 10;
+                }
+
+                if (tile.classList.contains('song-tile')) {
+                    doc.text(`${tile.textContent}`, 10, y);
+                } else if (tile.classList.contains('page-break-tile')) {
+                    doc.addPage();
+                    y = 10;
+                }
+
+                y += 10;
+            });
+
+            doc.save("setlist.pdf");
+        });
+
+    </script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 // Fetch songs from the Azure Function
 async function fetchSongs() {
-    alert('fetching songs');
+    //alert('fetching songs');
     const response = await fetch('https://setlistaccess.azurewebsites.net/api/setlistaccess?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D');
     const songs = await response.json();
-    alert('fetching songs' + songs);
+    //alert('fetching songs' + songs);
     displaySongs(songs);
 }
 
