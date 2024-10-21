@@ -9,6 +9,7 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            text-align: center;
         }
 
         h1 {
@@ -17,13 +18,14 @@
 
         .input-group {
             margin-bottom: 15px;
+            text-align: center;
         }
 
         label {
             margin-right: 10px;
         }
 
-        .song-tile {
+        .song-tile, .page-break-tile {
             padding: 10px;
             margin-bottom: 5px;
             background-color: #f0f0f0;
@@ -31,10 +33,13 @@
             cursor: grab;
             display: flex;
             justify-content: space-between;
+            width: 50%;
+            margin: 0 auto;
         }
 
         .song-container {
             margin-bottom: 30px;
+            text-align: center;
         }
 
         .tile-container {
@@ -43,6 +48,8 @@
             border: 1px solid #ddd;
             padding: 10px;
             background-color: #f9f9f9;
+            width: 50%;
+            margin: 0 auto;
         }
 
         .btn {
@@ -52,6 +59,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 20px;
         }
 
         .btn:hover {
@@ -61,6 +69,17 @@
         .setlist {
             margin-top: 20px;
             font-size: 16px;
+        }
+
+        .duration {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .page-break-tile {
+            background-color: #d0d0d0;
+            font-style: italic;
+            text-align: center;
         }
 
         @media print {
@@ -96,7 +115,7 @@
     <div class="song-container">
         <h2>Song List</h2>
         <div class="tile-container" id="tileContainer">
-            <!-- Song tiles will be injected here -->
+            <!-- Song tiles and page breaks will be injected here -->
         </div>
     </div>
 
@@ -107,55 +126,79 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
-    <div id="setlist-container">
-        <ul id="setlist" class="song-list">
-            <!-- Songs will be dynamically loaded here -->
-        </ul>
-    </div>
-    <button id="save-setlist">Save Setlist Order</button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="src/setlist.js"></script>
 
     <script>
+        // Song data array
+        // const songs = [
+        //     { song_name: 'Song 1', artist: 'Artist 1', length: 3, release_year: 2020 },
+        //     { song_name: 'Song 2', artist: 'Artist 2', length: 4, release_year: 2019 },
+        //     { song_name: 'Song 3', artist: 'Artist 3', length: 5, release_year: 2018 },
+        //     { song_name: 'Song 4', artist: 'Artist 4', length: 6, release_year: 2021 },
+        //     { song_name: 'Song 5', artist: 'Artist 5', length: 4, release_year: 2017 },
+        //     { song_name: 'Song 6', artist: 'Artist 6', length: 5, release_year: 2022 },
+        //     { song_name: 'Song 7', artist: 'Artist 7', length: 3, release_year: 2021 },
+        //     { song_name: 'Song 8', artist: 'Artist 8', length: 6, release_year: 2016 },
+        //     { song_name: 'Song 9', artist: 'Artist 9', length: 4, release_year: 2020 },
+        //     { song_name: 'Song 10', artist: 'Artist 10', length: 5, release_year: 2015 },
+        //     { song_name: 'Song 11', artist: 'Artist 11', length: 3, release_year: 2023 },
+        //     { song_name: 'Song 12', artist: 'Artist 12', length: 4, release_year: 2019 },
+        //     { song_name: 'Song 13', artist: 'Artist 13', length: 6, release_year: 2018 },
+        //     { song_name: 'Song 14', artist: 'Artist 14', length: 5, release_year: 2021 },
+        //     { song_name: 'Song 15', artist: 'Artist 15', length: 4, release_year: 2020 }
+        // ];
 
-        // Generate PDF
-        document.getElementById('generatePdf').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+        const tileContainer = document.getElementById('tileContainer');
 
-            const venue = document.getElementById('venue').value;
-            const band = document.getElementById('band').value;
-            const date = document.getElementById('date').value;
-            const numSets = parseInt(document.getElementById('numSets').value);
+        // Function to calculate total duration of songs
+        function calculateSetDuration(orderedSongs) {
+            let duration = 0;
+            orderedSongs.forEach(song => {
+                if (song.length) duration += song.length;
+            });
+            return duration;
+        }
 
-            // Get the song tiles in their current order
-            const orderedTiles = Array.from(document.querySelectorAll('.song-tile'));
-            const orderedSongs = orderedTiles.map(tile => tile.textContent);
+        // Generate song tiles and page break tiles
+        function generateTiles() {
+            tileContainer.innerHTML = '';  // Clear existing tiles
+            songs.forEach((song, index) => {
+                const songTile = document.createElement('div');
+                songTile.classList.add('song-tile');
+                songTile.dataset.index = index;
+                songTile.textContent = `${song.song_name} - ${song.artist} (${song.length} min, ${song.release_year})`;
+                songTile.dataset.length = song.length;
+                tileContainer.appendChild(songTile);
+            });
 
-            let currentSet = 1;
-            let songCounter = 0;
-
-            for (let i = 0; i < orderedSongs.length; i++) {
-                if (i % 12 === 0 && i !== 0) {
-                    doc.addPage(); // Add new page for each set
-                    songCounter = 0;
-                    currentSet++;
-                }
-
-                if (songCounter === 0) {
-                    doc.text(`Set ${currentSet}`, 10, 10);
-                    doc.text(`Venue: ${venue}`, 10, 20);
-                    doc.text(`Band: ${band}`, 10, 30);
-                    doc.text(`Date: ${date}`, 10, 40);
-                }
-
-                doc.text(`${i + 1}. ${orderedSongs[i]}`, 10, 50 + songCounter * 10);
-                songCounter++;
+            // Add initial page break tiles after every 12 songs
+            for (let i = 12; i < songs.length; i += 12) {
+                const pageBreakTile = document.createElement('div');
+                pageBreakTile.classList.add('page-break-tile');
+                pageBreakTile.textContent = "Page Break";
+                pageBreakTile.dataset.break = true;
+                tileContainer.insertBefore(pageBreakTile, tileContainer.children[i]);
             }
+        }
 
-            // Save the PDF
-            doc.save('setlist.pdf');
+        // Call to generate tiles initially
+        generateTiles();
+
+        // Make the song tiles and page breaks sortable using Sortable.js
+        const sortable = new Sortable(tileContainer, {
+            animation: 150,
+            handle: '.song-tile, .page-break-tile',
+            onEnd: function () {
+                updateSetDurations();  // Recalculate set durations on reorder
+            }
         });
-    </script>
-</body>
-</html>
+
+        // Function to update set durations
+        function updateSetDurations() {
+            let totalDuration = 0;
+            let setCounter = 1;
+
+            const orderedTiles = Array.from(document.querySelectorAll('.song-tile, .page-break-tile'));
+            orderedTiles.forEach((tile, index) => {
+                if (tile.classList.contains('song-t
