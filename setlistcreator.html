@@ -154,6 +154,12 @@
 
         const tileContainer = document.getElementById('tileContainer');
 
+        // Function to convert song time (in "MM:SS" format) to total seconds
+        function timeToSeconds(time_str){
+            minutes, seconds = map(int, time_str.split(':'))
+            return minutes * 60 + seconds
+        }
+
         // Function to calculate total duration of songs
         function calculateSetDuration(orderedSongs) {
             let duration = 0;
@@ -217,7 +223,7 @@
             const orderedTiles = Array.from(document.querySelectorAll('.song-tile, .page-break-tile'));
             orderedTiles.forEach((tile, index) => {
                 if (tile.classList.contains('song-tile')) {
-                    totalDuration += parseInt(tile.dataset.length);
+                    totalDuration += parseInt(timeToSeconds(tile.dataset.length));
                 } else if (tile.classList.contains('page-break-tile') || index === orderedTiles.length - 1) {
                     console.log(`Set ${setCounter}: Total Duration: ${totalDuration} minutes`);
                     const durationElement = document.createElement('div');
