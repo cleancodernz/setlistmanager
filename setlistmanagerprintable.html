@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setlist Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .list-container {
+            width: 45%;
+        }
+
+        .song-tile, .page-break-tile {
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .song-tile {
+            background-color: #f0f0f0;
+            position: relative;
+        }
+
+        .page-break-tile {
+            background-color: #ffcccb;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .tile-container {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            min-height: 200px;
+        }
+
+        .icon {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 14px;
+            color: red;
+        }
+
+        .icon.add {
+            color: green;
+        }
+
+        .duration {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        .input-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-container input {
+            width: 200px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Setlist Manager</h1>
+
+    <!-- Inputs for venue, band, gig date, and sets -->
+    <div class="input-container">
+        <label for="venueName">Venue Name:</label>
+        <input type="text" id="venueName" placeholder="Enter venue name">
+
+        <label for="bandName">Band Name:</label>
+        <input type="text" id="bandName" placeholder="Enter band name">
+
+        <label for="gigDate">Gig Date:</label>
+        <input type="date" id="gigDate">
+
+        <label for="numberOfSets">Number of Sets:</label>
+        <input type="number" id="numberOfSets" value="1" min="1" max="10">
+
+        <label for="songsPerSet">Number of Songs Per Set:</label>
+        <input type="number" id="songsPerSet" value="10" min="1" max="13">
+
+    </div>
+
+    <div class="button-container">
+        <button id="generatePdfButton">Generate PDF</button>
+        <button id="randomizeSetlistButton">Randomize Setlist</button>
+        <button id="clearSetlistButton">Clear Setlist</button>
+        <button id="printSetlistButton">Print Setlist</button>
+    </div>
+
+    <div class="container">
+        <!-- Setlist Manager -->
+        <div class="list-container">
+
+            <!-- <h3>Setlist</h3> -->
+            <h3>Setlist (<span id="setlistCount">0</span> songs)</h3>
+
+            <div class="tile-container" id="setlistContainer">
+                <!-- Song tiles and page breaks will be injected here -->
+            </div>
+        </div>
+
+        <!-- Unused Songs -->
+        <div class="list-container">
+
+            <!-- <h3>Available Songs</h3> -->
+            <h3>Available Songs (<span id="unusedCount">0</span> songs)</h3>
+
+            <div class="tile-container" id="unusedSongsContainer">
+                <!-- Unused songs will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate PDF Button -->
+    <div class="button-container">
+        <button id="generatePdfButton">Generate PDF</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        // Setlist and unused songs arrays
+        let setlistSongs = [];
+        let unusedSongs = [];
+
+        const setlistContainer = document.getElementById('setlistContainer');
+        const unusedSongsContainer = document.getElementById('unusedSongsContainer');
+        const venueNameInput = document.getElementById('venueName');
+        const bandNameInput = document.getElementById('bandName');
+        const gigDateInput = document.getElementById('gigDate');
+        const numberOfSetsInput = document.getElementById('numberOfSets');  
+        const setlistCountDisplay = document.getElementById('setlistCount');
+        const unusedCountDisplay = document.getElementById('unusedCount');
+      
+
+        // Function to fetch songs from the Azure API
+        async function fetchSongsFromAzure() {
+            try {
+                // Simulate fetching song data from an Azure function
+                // In a real-world scenario, you would replace this with an actual fetch call like:
+                // const response = await fetch('https://your-azure-function-url/api/songs');
+                // const songs = await response.json();
+                const response = await fetch('http://localhost:7071/api/setlistaccess');            
+                const songs = await response.json();
+
+                // Simulated song data fetched from Azure
+                // const songs = [
+                //     { song_name: 'Song 1', artist: 'Artist 1', length: 3 },
+                //     { song_name: 'Song 2', artist: 'Artist 2', length: 4 },
+                //     { song_name: 'Song 3', artist: 'Artist 3', length: 5 },
+                //     { song_name: 'Song 4', artist: 'Artist 4', length: 6 },
+                //     { song_name: 'Song 5', artist: 'Artist 5', length: 4 },
+                //     { song_name: 'Song 6', artist: 'Artist 6', length: 5 },
+                //     { song_name: 'Song 7', artist: 'Artist 7', length: 3 },
+                //     { song_name: 'Song 8', artist: 'Artist 8', length: 6 },
+                //     { song_name: 'Song 9', artist: 'Artist 9', length: 4 },
+                //     { song_name: 'Song 10', artist: 'Artist 10', length: 5 }
+                // ];
+
+                // Populate unused songs with the fetched data
+                unusedSongs = songs;
+                renderUnusedSongs();  // Render the unused songs list
+            } catch (error) {
+                console.error('Error fetching songs from Azure:', error);
+            }
+        }
+
+        // Function to create a song tile element
+        function createSongTile(song, isInSetlist) {
+            const songTile = document.createElement('div');
+            songTile.classList.add('song-tile');
+            songTile.textContent = `${song.song_name} - ${song.artist} (${song.length} min)`;
+            songTile.dataset.length = song.length;
+
+            const icon = document.createElement('span');
+            icon.classList.add('icon');
+            icon.textContent = isInSetlist ? '❌' : '➕';
+            icon.classList.toggle('add', !isInSetlist);
+
+            // Attach event to move song between lists
+            icon.addEventListener('click', function() {
+                if (isInSetlist) {
+                    moveToUnused(song);
+                } else {
+                    moveToSetlist(song);
+                }
+            });
+
+            songTile.appendChild(icon);
+            return songTile;
+        }
+
+        // Move a song from the setlist to the unused list
+        function moveToUnused(song) {
+            setlistSongs = setlistSongs.filter(s => s.song_name !== song.song_name);
+            unusedSongs.push(song);
+            renderLists();
+        }
+
+        // Move a song from the unused list to the setlist
+        function moveToSetlist(song) {
+            unusedSongs = unusedSongs.filter(s => s.song_name !== song.song_name);
+            setlistSongs.push(song);
+            renderLists();
+        }
+
+        // Render the unused songs list
+        function renderUnusedSongs() {
+            // Clear the unused songs container
+            unusedSongsContainer.innerHTML = '';
+
+            // Add unused songs
+            unusedSongs.forEach(song => {
+                unusedSongsContainer.appendChild(createSongTile(song, false));
+            });
+
+            // Update unused count
+            unusedCountDisplay.textContent = unusedSongs.length;
+        }
+
+        // Added as default code doesn't work
+        function renderLists() {
+            renderSetlist();
+            renderUnusedSongs();
+        }
+
+        // Render the setlist
+        function renderSetlist() {
+            // Clear the setlist container
+            setlistContainer.innerHTML = '';
+
+            // set the songs per set
+            const songsPerSet = document.getElementById('songsPerSet').value || 1;
+            console.log('render songs per set: ' + songsPerSet);
+
+            // Add setlist songs
+            setlistSongs.forEach(song => {
+                setlistContainer.appendChild(createSongTile(song, true));
+            });
+
+            // Update setlist count
+            setlistCountDisplay.textContent = setlistSongs.length;
+
+            // Add page break tile between every 3 songs for demonstration
+            for (let i = parseInt(songsPerSet); i < setlistSongs.length; i += parseInt(songsPerSet)) {
+                console.log('adding page break tile at ' + i + ' out of ' + setlistSongs.length);
+                const pageBreakTile = document.createElement('div');
+                pageBreakTile.classList.add('page-break-tile');
+                pageBreakTile.textContent = "Page Break";
+                setlistContainer.insertBefore(pageBreakTile, setlistContainer.children[i]);
+            }
+
+            // Recalculate set durations
+            updateSetDurations();
+        }
+
+// ############################## ADDED ALL THIS #######################################
+
+    function timeToSeconds(timeString) {
+            // Remove the " min" part from the string
+            let cleanTime = timeString.replace(" min", "");
+
+            // Split the time into hours, minutes, and seconds
+            let timeParts = cleanTime.split(":").map(Number);
+
+            // Ensure the array has exactly 3 elements (hours, minutes, seconds)
+            while (timeParts.length < 3) {
+                timeParts.unshift(0);  // Add 0 for hours if only minutes:seconds are provided
+            }
+
+            let hours = timeParts[0];
+            let minutes = timeParts[1];
+            let seconds = timeParts[2];
+
+            // Convert the time to seconds
+            return (hours * 3600) + (minutes * 60) + seconds;
+        }
+
+        // change secondds to be in a more redable string format
+        function secondsToTimeString(seconds) {
+            const minutes = Math.floor(seconds / 60);  // Get whole minutes
+            const remainingSeconds = seconds % 60;     // Get the remainder (seconds)
+
+            // Pad with leading zeros if necessary
+            const minutesStr = String(minutes).padStart(2, '0');
+            const secondsStr = String(remainingSeconds).padStart(2, '0');
+
+            return `${minutesStr}:${secondsStr} min`;
+        }
+
+        // Function to calculate total duration of songs
+        function calculateSetDuration(orderedTiles, startIndex, endIndex) {
+            let totalDuration = 0;
+            for (let i = startIndex; i < endIndex; i++) {
+                const tile = orderedTiles[i];
+                if (tile.classList.contains('song-tile')) {
+                    //totalDuration += parseInt(tile.dataset.length);
+                    totalDuration += parseInt(timeToSeconds(tile.dataset.length));
+                    //console.log('' + tile.dataset.length + ' : ' + totalDuration);
+                }
+            }
+            return totalDuration;
+        }
+
+        // #######################################################################################
+
+        // Function to calculate total duration of songs
+        // function calculateSetDuration(orderedTiles, startIndex, endIndex) {
+        //     let totalDuration = 0;
+        //     for (let i = startIndex; i < endIndex; i++) {
+        //         if (orderedTiles[i].dataset.length) {
+        //             totalDuration += parseInt(orderedTiles[i].dataset.length);
+        //         }
+        //     }
+        //     return totalDuration;
+        // }
+
+        // Function to update set durations
+        function updateSetDurations() {
+            // First remove any existing duration elements
+            document.querySelectorAll('.duration').forEach(elem => elem.remove());
+
+            let orderedTiles = Array.from(document.querySelectorAll('#setlistContainer .song-tile, #setlistContainer .page-break-tile'));
+            let start = 0;
+            let setCount = 0;
+
+            // Loop over each tile and calculate durations for each set
+            orderedTiles.forEach((tile, index) => {
+                if (tile.classList.contains('page-break-tile') || index === orderedTiles.length - 1) {
+                    // Calculate set duration
+                    let end = tile.classList.contains('page-break-tile') ? index : index + 1;
+                    let duration = calculateSetDuration(orderedTiles, start, end);
+
+                    // Create a duration element
+                    const durationElement = document.createElement('div');
+                    durationElement.classList.add('duration');
+                    //durationElement.textContent = `Set Duration: ${duration} min`;
+                    durationElement.textContent = `Set ${setCount+1} Duration: ${secondsToTimeString(duration)}`;
+
+                    // Insert the duration after the current set
+                    setlistContainer.insertBefore(durationElement, tile.nextSibling);
+
+                    start = end + 1;  // Update start index for the next set
+                    setCount++;
+                }
+            });
+        }
+
+        // Function to update set durations
+        // function updateSetDurations() {
+        //     const setTiles = Array.from(setlistContainer.children);
+        //     let totalDuration = calculateSetDuration(setTiles, 0, setTiles.length);
+        //     console.log('Total Duration:', totalDuration, 'minutes');
+        // }
+
+        // Generate PDF function
+        // function generatePDF() {
+        //     const { jsPDF } = window.jspdf;
+        //     const doc = new jsPDF();
+
+        //     const venueName = venueNameInput.value || 'Unknown Venue';
+        //     const bandName = bandNameInput.value || 'Unknown Band';
+        //     const gigDate = gigDateInput.value || 'Unknown Date';
+        //     const numberOfSets = numberOfSetsInput.value || 1;
+
+        //     let yPosition = 20;
+
+        //     doc.text(`Venue: ${venueName}`, 10, yPosition);
+        //     doc.text(`Band: ${bandName}`, 10, yPosition + 10);
+        //     doc.text(`Date: ${gigDate}`, 10, yPosition + 20);
+        //     doc.text(`Set ${Math.floor(index / numberOfSets) + 1}`, 10, yPosition);
+
+        //     let songCounter = 0;
+        //     setlistSongs.forEach((song, index) => {
+        //         yPosition += 20;
+        //         doc.text(`${songCounter++}: ${song.song_name} - ${song.artist} (${song.length} min)`, 10, yPosition + 10);
+        //         if
+
+
+        //         if (yPosition > 270) {
+        //             doc.addPage();
+                    
+        //             yPosition = 20;
+        //         }                
+                
+        //     });
+
+        //     // Save the PDF
+        //     doc.save('setlist.pdf');
+        // }
+
+        // Initialize sortable lists using Sortable.js
+        new Sortable(setlistContainer, {
+            animation: 150,
+            ghostClass: 'ghost',
+            onEnd: function() {
+                updateSetDurations();  // Update durations after sorting
+            }
+        });
+
+        new Sortable(unusedSongsContainer, {
+            animation: 150,
+            ghostClass: 'ghost',
+        });
+
+        // Event listener for generating PDF
+        //document.getElementById('generatePdfButton').addEventListener('click', generatePDF);
+
+        // #################### ADDED THIS #############################
+        // Function to randomize setlist based on the number of sets
+        function randomizeSetlist() {
+            const numberOfSets = parseInt(numberOfSetsInput.value) || 1; // Get the number of sets
+            const totalSongs = unusedSongs.length; // Total unused songs
+            // ########### Added ############
+            const songsPerSet = document.getElementById('songsPerSet').value || 1;
+            //const songsPerSet = Math.floor(totalSongs / numberOfSets); // Calculate songs per set
+            const usedSongs = new Set(); // To track used songs
+
+            setlistSongs = []; // Clear existing setlist
+
+            console.log('number of sets: ' + numberOfSets);
+            console.log('songs per set: ' + songsPerSet);
+
+            // Randomly select songs for each set
+            for (let setIndex = 0; setIndex < numberOfSets; setIndex++) {
+                    console.log('current set ' + setIndex);
+                    for (let i = 0; i < songsPerSet; i++) {
+                        if (unusedSongs.length === 0) {
+                            alert("Not enough songs to fill the setlist!");
+                            return; // Exit if there are not enough songs
+                        }
+
+                        const randomIndex = Math.floor(Math.random() * unusedSongs.length);
+                        const selectedSong = unusedSongs[randomIndex];
+
+                        // Ensure the song is not already used
+                        if (!usedSongs.has(selectedSong.song_name)) {
+                            setlistSongs.push(selectedSong); // Add song to the setlist
+                            usedSongs.add(selectedSong.song_name); // Mark song as used
+                            unusedSongs.splice(randomIndex, 1); // Remove song from unused list
+                        }
+                    }
+
+                    console.log('used songs: ' + usedSongs.length);
+                    console.log('unused songs: ' + unusedSongs.length);
+
+                }
+
+                renderLists(); // Re-render both lists after adding songs
+            }
+
+            // Event listener for the randomize button
+            document.getElementById('randomizeSetlistButton').addEventListener('click', randomizeSetlist);
+
+        // Function to clear the setlist and move all songs back to the unused list
+        function clearSetlist() {
+            unusedSongs = unusedSongs.concat(setlistSongs); // Add all setlist songs back to unused songs
+            setlistSongs = []; // Clear the setlist
+
+            renderLists(); // Re-render both lists after clearing the setlist
+        }
+
+        // Event listener for the clear setlist button
+        document.getElementById('clearSetlistButton').addEventListener('click', clearSetlist);
+
+        // Function to print the setlist
+        function printSetlist() {
+            const venueName = venueNameInput.value || 'Unknown Venue';
+            const bandName = bandNameInput.value || 'Unknown Band';
+            const gigDate = gigDateInput.value || 'Unknown Date';
+            let setCount = 1; // Counter for set numbers
+            let setDuration = 0; // Duration accumulator
+
+            let printWindow = window.open('', '_blank'); // Open a new window for printing
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Setlist Printout</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            h2 { margin-bottom: 10px; }
+                            .set { margin-bottom: 50px; page-break-after: always; }
+                            .set-title { font-size: 24px; }
+                            .duration { font-weight: bold; }
+                            .page-break { page-break-before: always; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Setlist</h1>
+                        <p><strong>Venue:</strong> ${venueName}</p>
+                        <p><strong>Band:</strong> ${bandName}</p>
+                        <p><strong>Date:</strong> ${gigDate}</p>
+                        <h2 class="set-title">Set ${setCount}</h2>
+            `);
+
+            const setTiles = Array.from(setlistContainer.children);
+            const numberOfSets = parseInt(numberOfSetsInput.value) || 1;
+
+            for (let i = 0; i < setTiles.length; i++) {
+                const tile = setTiles[i];
+
+                //console.log(tile.attributes);
+
+                // if (tile.classList.contains('page-break-tile')) {
+                //     // Insert page break
+                //     printWindow.document.write(`
+                //         <div class="page-break"></div>
+                //         <div class="set">
+                //             <h2 class="set-title">Set ${setCount}</h2>
+                //     `);
+                //     continue; // Skip adding a page break tile to the printout
+                // }
+                if (tile.classList.contains('song-tile')){
+                    // Add song information to the printout
+                    //const songLength = parseInt(tile.dataset.length);
+                    console.log('set count: ' + setCount);
+                    
+                    const songLength = parseInt(timeToSeconds(tile.dataset.length));
+                    setDuration += songLength; // Accumulate set duration
+
+                    printWindow.document.write(`
+                            <p>${tile.textContent}</p>
+                    `);
+
+                    // Check for page break condition
+                    console.log('print set tiles length: ' + setTiles.length);
+                    if (i === setTiles.length - 1 || setTiles[i + 1].classList.contains('page-break-tile')|| setTiles[i + 1].classList.contains('duration')) {
+                        setCount++; // Increment set counter
+                        console.log('printable set duration: ' + setDuration);
+                        printWindow.document.write(`                                
+                            <div class="duration">Total Duration: ${formatDuration(setDuration)}</div>
+                        `);
+
+                        // add a page break and new set
+                        if(setCount <= numberOfSets){
+                            printWindow.document.write(`   
+                                <div class="page-break"></div>
+                                <div class="set">
+                                <h2 class="set-title">Set ${setCount}</h2>
+                            `);
+                        }  
+
+                        setDuration = 0; // Reset duration for the next set                            
+                    }                      
+                }
+            }
+
+            printWindow.document.write(`
+                        </body>
+                    </html>
+            `);
+            printWindow.document.close(); // Close the document to apply changes
+            printWindow.print(); // Open the print dialog
+        }
+
+        // Helper function to format duration from seconds to "MM:SS" string
+        function formatDuration(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} min`;
+        }
+
+        // Event listener for the print setlist button
+        document.getElementById('printSetlistButton').addEventListener('click', printSetlist);
+
+
+
+    // #########################################################################
+
+        // Fetch songs when the page loads
+        fetchSongsFromAzure();
+    </script>
+</body>
+</html>

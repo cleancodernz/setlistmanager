@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setlist Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .list-container {
+            width: 45%;
+        }
+
+        .song-tile, .page-break-tile {
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .song-tile {
+            background-color: #f0f0f0;
+            position: relative;
+        }
+
+        .page-break-tile {
+            background-color: #ffcccb;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .tile-container {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            min-height: 200px;
+        }
+
+        .icon {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 14px;
+            color: red;
+        }
+
+        .icon.add {
+            color: green;
+        }
+
+        .duration {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Setlist Manager</h1>
+
+    <div class="container">
+        <!-- Setlist Manager -->
+        <div class="list-container">
+            <h3>Setlist</h3>
+            <div class="tile-container" id="setlistContainer">
+                <!-- Song tiles and page breaks will be injected here -->
+            </div>
+        </div>
+
+        <!-- Unused Songs -->
+        <div class="list-container">
+            <h3>Available Songs</h3>
+            <div class="tile-container" id="unusedSongsContainer">
+                <!-- Unused songs will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+    <script>
+        // Setlist and unused songs arrays
+        let setlistSongs = [];
+        let unusedSongs = [];
+
+        const setlistContainer = document.getElementById('setlistContainer');
+        const unusedSongsContainer = document.getElementById('unusedSongsContainer');
+
+        // Function to fetch songs from the Azure API
+        async function fetchSongsFromAzure() {
+            try {
+                // Simulate fetching song data from an Azure function
+                // In a real-world scenario, you would replace this with an actual fetch call like:
+                // const response = await fetch('https://your-azure-function-url/api/songs');
+                // const songs = await response.json();
+                const response = await fetch('http://localhost:7071/api/setlistaccess');            
+                const songs = await response.json();
+
+                // Simulated song data fetched from Azure
+                // const songs = [
+                //     { song_name: 'Song 1', artist: 'Artist 1', length: 3 },
+                //     { song_name: 'Song 2', artist: 'Artist 2', length: 4 },
+                //     { song_name: 'Song 3', artist: 'Artist 3', length: 5 },
+                //     { song_name: 'Song 4', artist: 'Artist 4', length: 6 },
+                //     { song_name: 'Song 5', artist: 'Artist 5', length: 4 },
+                //     { song_name: 'Song 6', artist: 'Artist 6', length: 5 },
+                //     { song_name: 'Song 7', artist: 'Artist 7', length: 3 },
+                //     { song_name: 'Song 8', artist: 'Artist 8', length: 6 },
+                //     { song_name: 'Song 9', artist: 'Artist 9', length: 4 },
+                //     { song_name: 'Song 10', artist: 'Artist 10', length: 5 }
+                // ];
+
+                // Populate unused songs with the fetched data
+                unusedSongs = songs;
+                renderUnusedSongs();  // Render the unused songs list
+            } catch (error) {
+                console.error('Error fetching songs from Azure:', error);
+            }
+        }
+
+        // Function to create a song tile element
+        function createSongTile(song, isInSetlist) {
+            const songTile = document.createElement('div');
+            songTile.classList.add('song-tile');
+            songTile.textContent = `${song.song_name} - ${song.artist} (${song.length} min)`;
+            songTile.dataset.length = song.length;
+
+            const icon = document.createElement('span');
+            icon.classList.add('icon');
+            icon.textContent = isInSetlist ? '❌' : '➕';
+            icon.classList.toggle('add', !isInSetlist);
+
+            // Attach event to move song between lists
+            icon.addEventListener('click', function() {
+                if (isInSetlist) {
+                    moveToUnused(song);
+                } else {
+                    moveToSetlist(song);
+                }
+            });
+
+            songTile.appendChild(icon);
+            return songTile;
+        }
+
+        // Move a song from the setlist to the unused list
+        function moveToUnused(song) {
+            setlistSongs = setlistSongs.filter(s => s.song_name !== song.song_name);
+            unusedSongs.push(song);
+            renderLists();
+        }
+
+        // Move a song from the unused list to the setlist
+        function moveToSetlist(song) {
+            unusedSongs = unusedSongs.filter(s => s.song_name !== song.song_name);
+            setlistSongs.push(song);
+            renderLists();
+        }
+
+        // Render the unused songs list
+        function renderUnusedSongs() {
+            // Clear the unused songs container
+            unusedSongsContainer.innerHTML = '';
+
+            // Add unused songs
+            unusedSongs.forEach(song => {
+                unusedSongsContainer.appendChild(createSongTile(song, false));
+            });
+        }
+
+        // Render the setlist
+        function renderSetlist() {
+            // Clear the setlist container
+            setlistContainer.innerHTML = '';
+
+            // Add setlist songs
+            setlistSongs.forEach(song => {
+                setlistContainer.appendChild(createSongTile(song, true));
+            });
+
+            // Add page break tile between every 3 songs for demonstration
+            for (let i = 3; i < setlistSongs.length; i += 3) {
+                const pageBreakTile = document.createElement('div');
+                pageBreakTile.classList.add('page-break-tile');
+                pageBreakTile.textContent = "Page Break";
+                setlistContainer.insertBefore(pageBreakTile, setlistContainer.children[i]);
+            }
+
+            // Recalculate set durations
+            updateSetDurations();
+        }
+
+        // ############################## ADDED ALL THIS #######################################
+
+        function timeToSeconds(timeString) {
+            // Remove the " min" part from the string
+            let cleanTime = timeString.replace(" min", "");
+
+            // Split the time into hours, minutes, and seconds
+            let timeParts = cleanTime.split(":").map(Number);
+
+            // Ensure the array has exactly 3 elements (hours, minutes, seconds)
+            while (timeParts.length < 3) {
+                timeParts.unshift(0);  // Add 0 for hours if only minutes:seconds are provided
+            }
+
+            let hours = timeParts[0];
+            let minutes = timeParts[1];
+            let seconds = timeParts[2];
+
+            // Convert the time to seconds
+            return (hours * 3600) + (minutes * 60) + seconds;
+        }
+
+        // change secondds to be in a more redable string format
+        function secondsToTimeString(seconds) {
+            const minutes = Math.floor(seconds / 60);  // Get whole minutes
+            const remainingSeconds = seconds % 60;     // Get the remainder (seconds)
+
+            // Pad with leading zeros if necessary
+            const minutesStr = String(minutes).padStart(2, '0');
+            const secondsStr = String(remainingSeconds).padStart(2, '0');
+
+            return `${minutesStr}:${secondsStr} min`;
+        }
+
+        // Function to calculate total duration of songs
+        function calculateSetDuration(orderedTiles, startIndex, endIndex) {
+            let totalDuration = 0;
+            for (let i = startIndex; i < endIndex; i++) {
+                const tile = orderedTiles[i];
+                if (tile.classList.contains('song-tile')) {
+                    //totalDuration += parseInt(tile.dataset.length);
+                    totalDuration += parseInt(timeToSeconds(tile.dataset.length));
+                    console.log('' + tile.dataset.length + ' : ' + totalDuration);
+                }
+            }
+            return totalDuration;
+        }
+
+        // #######################################################################################
+
+        // Function to calculate total duration of songs
+        // function calculateSetDuration(orderedTiles, startIndex, endIndex) {
+        //     let totalDuration = 0;
+        //     for (let i = startIndex; i < endIndex; i++) {
+        //         const tile = orderedTiles[i];
+        //         if (tile.classList.contains('song-tile')) {
+        //             totalDuration += parseInt(tile.dataset.length);
+        //         }
+        //     }
+        //     return totalDuration;
+        // }
+
+        // Function to update set durations
+        function updateSetDurations() {
+            // First remove any existing duration elements
+            document.querySelectorAll('.duration').forEach(elem => elem.remove());
+
+            let orderedTiles = Array.from(document.querySelectorAll('#setlistContainer .song-tile, #setlistContainer .page-break-tile'));
+            let start = 0;
+
+            // Loop over each tile and calculate durations for each set
+            orderedTiles.forEach((tile, index) => {
+                if (tile.classList.contains('page-break-tile') || index === orderedTiles.length - 1) {
+                    // Calculate set duration
+                    let end = tile.classList.contains('page-break-tile') ? index : index + 1;
+                    let duration = calculateSetDuration(orderedTiles, start, end);
+
+                    // Create a duration element
+                    const durationElement = document.createElement('div');
+                    durationElement.classList.add('duration');
+                    //durationElement.textContent = `Set Duration: ${duration} min`;
+                    durationElement.textContent = `Set Duration: ${secondsToTimeString(duration)}`;
+
+                    // Insert the duration after the current set
+                    setlistContainer.insertBefore(durationElement, tile.nextSibling);
+
+                    start = end + 1;  // Update start index for the next set
+                }
+            });
+        }
+
+        // Render both lists (setlist and unused songs)
+        function renderLists() {
+            renderSetlist();
+            renderUnusedSongs();
+        }
+
+        // Initial rendering of the unused songs
+        window.onload = async function() {
+            await fetchSongsFromAzure();  // Fetch songs and populate the unused songs section
+        };
+
+        // Make the song tiles and page breaks sortable using Sortable.js in setlist manager
+        const sortable = new Sortable(setlistContainer, {
+            animation: 150,
+            ghostClass: 'ghost',
+            onEnd: function() {
+                updateSetDurations();  // Update durations after sorting
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -154,20 +154,60 @@
 
         const tileContainer = document.getElementById('tileContainer');
 
-        // Function to convert song time (in "MM:SS" format) to total seconds
-        function timeToSeconds(time_str){
-            minutes, seconds = map(int, time_str.split(':'))
-            return minutes * 60 + seconds
+        function timeToSeconds(timeString) {
+            // Remove the " min" part from the string
+            let cleanTime = timeString.replace(" min", "");
+
+            // Split the time into hours, minutes, and seconds
+            let timeParts = cleanTime.split(":").map(Number);
+
+            // Ensure the array has exactly 3 elements (hours, minutes, seconds)
+            while (timeParts.length < 3) {
+                timeParts.unshift(0);  // Add 0 for hours if only minutes:seconds are provided
+            }
+
+            let hours = timeParts[0];
+            let minutes = timeParts[1];
+            let seconds = timeParts[2];
+
+            // Convert the time to seconds
+            return (hours * 3600) + (minutes * 60) + seconds;
+        }
+
+        // change secondds to be in a more redable string format
+        function secondsToTimeString(seconds) {
+            const minutes = Math.floor(seconds / 60);  // Get whole minutes
+            const remainingSeconds = seconds % 60;     // Get the remainder (seconds)
+
+            // Pad with leading zeros if necessary
+            const minutesStr = String(minutes).padStart(2, '0');
+            const secondsStr = String(remainingSeconds).padStart(2, '0');
+
+            return `${minutesStr}:${secondsStr} min`;
         }
 
         // Function to calculate total duration of songs
-        function calculateSetDuration(orderedSongs) {
-            let duration = 0;
-            orderedSongs.forEach(song => {
-                if (song.length) duration += song.length;
-            });
-            return duration;
+        function calculateSetDuration(orderedTiles, startIndex, endIndex) {
+            let totalDuration = 0;
+            for (let i = startIndex; i < endIndex; i++) {
+                const tile = orderedTiles[i];
+                if (tile.classList.contains('song-tile')) {
+                    //totalDuration += parseInt(tile.dataset.length);
+                    totalDuration += parseInt(timeToSeconds(tile.dataset.length));
+                    console.log('' + tile.dataset.length + ' : ' + totalDuration);
+                }
+            }
+            return totalDuration;
         }
+
+        // Function to calculate total duration of songs
+        // function calculateSetDuration(orderedSongs) {
+        //     let duration = 0;
+        //     orderedSongs.forEach(song => {
+        //         if (song.length) duration += song.length;
+        //     });
+        //     return duration;
+        // }
 
         // Generate song tiles and page break tiles
         function generateTiles(songs) {
@@ -194,7 +234,8 @@
         // Fetch songs from the Azure Function
         async function fetchSongs() {
             //alert('fetching songs');
-            const response = await fetch('https://setlistaccess.azurewebsites.net/api/setlistaccess?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D');
+            //const response = await fetch('https://setlistaccess.azurewebsites.net/api/setlistaccess?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D');
+            const response = await fetch('http://localhost:7071/api/setlistaccess');            
             const songs = await response.json();
             //alert('fetching songs' + songs);
             generateTiles(songs);
@@ -217,24 +258,54 @@
 
         // Function to update set durations
         function updateSetDurations() {
-            let totalDuration = 0;
-            let setCounter = 1;
+            // First remove any existing duration elements
+            document.querySelectorAll('.duration').forEach(elem => elem.remove());
 
-            const orderedTiles = Array.from(document.querySelectorAll('.song-tile, .page-break-tile'));
+            let orderedTiles = Array.from(document.querySelectorAll('.song-tile, .page-break-tile'));
+            let totalDuration = 0;
+            let start = 0;
+
+            // Loop over each tile and calculate durations for each set
             orderedTiles.forEach((tile, index) => {
-                if (tile.classList.contains('song-tile')) {
-                    totalDuration += parseInt(timeToSeconds(tile.dataset.length));
-                } else if (tile.classList.contains('page-break-tile') || index === orderedTiles.length - 1) {
-                    console.log(`Set ${setCounter}: Total Duration: ${totalDuration} minutes`);
+                if (tile.classList.contains('page-break-tile') || index === orderedTiles.length - 1) {
+                    // Calculate set duration
+                    let end = tile.classList.contains('page-break-tile') ? index : index + 1;
+                    let duration = calculateSetDuration(orderedTiles, start, end);
+                    
+                    // Create a duration element
                     const durationElement = document.createElement('div');
                     durationElement.classList.add('duration');
-                    durationElement.textContent = `Set ${setCounter}: Total Duration: ${totalDuration} minutes`;
+                    durationElement.textContent = `Set Duration: ${secondsToTimeString(duration)}`;
+
+                    // Insert the duration after the current set
                     tileContainer.insertBefore(durationElement, tile.nextSibling);
-                    setCounter++;
-                    totalDuration = 0;  // Reset duration for the next set
+
+                    start = end + 1;  // Update start index for the next set
                 }
             });
         }
+
+        // Function to update set durations
+        // function updateSetDurations() {
+        //     let totalDuration = 0;
+        //     let setCounter = 1;
+
+        //     const orderedTiles = Array.from(document.querySelectorAll('.song-tile, .page-break-tile'));
+        //     orderedTiles.forEach((tile, index) => {
+        //         if (tile.classList.contains('song-tile')) {
+        //             totalDuration += parseInt(timeToSeconds(tile.dataset.length));
+        //             console.log(tile.dataset.length + ' : ' + totalDuration);
+        //         } else if (tile.classList.contains('page-break-tile') || index === orderedTiles.length - 1) {
+        //             console.log(`Set ${setCounter}: Total Duration: ${totalDuration} minutes`);
+        //             const durationElement = document.createElement('div');
+        //             durationElement.classList.add('duration');
+        //             durationElement.textContent = `Set ${setCounter}: Total Duration: ${totalDuration} minutes`;
+        //             tileContainer.insertBefore(durationElement, tile.nextSibling);
+        //             setCounter++;
+        //             totalDuration = 0;  // Reset duration for the next set
+        //         }
+        //     });
+        // }
 
         // Generate PDF
         document.getElementById('generatePdf').addEventListener('click', function () {
