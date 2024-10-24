@@ -5,8 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
 // Load songs from the database
 async function loadSongs() {
     try {
-        const activeSongsResponse = await fetch('http://localhost:7071/api/get_songs?active=true'); // Azure function endpoint for active songs
-        const inactiveSongsResponse = await fetch('http://localhost:7071/api/get_songs?active=false'); // Azure function endpoint for inactive songs
+        //const activeSongsResponse = await fetch('http://localhost:7071/api/get_songs?active=true'); // Azure function endpoint for active songs
+        const activeSongsResponse = await fetch('https://setlistaccess.azurewebsites.net/api/get_songs?code=2xAausN5pp5c_vju2mzlBf0vyOvHs1MakxgZwqxAxdbBAzFu2epvOw%3D%3D?active=true'); // Azure function endpoint for active songs
+        //const inactiveSongsResponse = await fetch('http://localhost:7071/api/get_songs?active=false'); // Azure function endpoint for inactive songs
+        const inactiveSongsResponse = await fetch('https://setlistaccess.azurewebsites.net/api/get_songs?code=2xAausN5pp5c_vju2mzlBf0vyOvHs1MakxgZwqxAxdbBAzFu2epvOw%3D%3D?active=false'); // Azure function endpoint for active songs
 
         const activeSongs = await activeSongsResponse.json();
         const inactiveSongs = await inactiveSongsResponse.json();
@@ -42,7 +44,9 @@ function renderSongs(containerId, songs, isActive) {
 // Toggle song between active and inactive
 async function toggleSongStatus(songId, isActive) {
     try {
-        const response = await fetch(`http://localhost:7071/api/toggleSongStatus`, {
+        
+        //const response = await fetch(`http://localhost:7071/api/toggleSongStatus`, {
+        const response = await fetch(`https://setlistaccess.azurewebsites.net/api/toggleSongStatus?code=E_ExPxKmrlEs9UyOV6a9OhqqpzTYvjHmT_fAWy31iexnAzFurebEOA%3D%3D`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -67,8 +71,8 @@ document.getElementById('searchSpotifyButton').addEventListener('click', async f
 
     try {
         //const response = await fetch(`http://localhost:7071/api/searchSpotify?song=${searchQuery}`); // Azure function to search Spotify API
-        const response = await fetch(`http://localhost:7071/api/spotifyintegrationjson?query=${encodeURIComponent(searchQuery)}`);
-        //const response = await fetch(`https://spotifyintegrationmach2.azurewebsites.net/api/spotifyintegrationjson?code=DyVZ8ue18beuku5Loss3S-CSEjrzhvAM4O-LSHTZV7o2AzFuA5aXAQ%3D%3D&query=${encodeURIComponent(searchQuery)}`);
+        //const response = await fetch(`http://localhost:7071/api/spotifyintegrationjson?query=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`https://spotifyintegrationmach2.azurewebsites.net/api/spotifyintegrationjson?code=DyVZ8ue18beuku5Loss3S-CSEjrzhvAM4O-LSHTZV7o2AzFuA5aXAQ%3D%3D&query=${encodeURIComponent(searchQuery)}`);
         const searchResults = await response.json();
 
         displaySpotifySearchResults(searchResults);
@@ -101,7 +105,8 @@ function displaySpotifySearchResults(results) {
 // Add selected song to the database
 async function addSongToDatabase(song) {
     try {
-        const response = await fetch(`http://localhost:7071/api/addSong`, {
+        //const response = await fetch(`http://localhost:7071/api/addSong`, {
+        const response = await fetch(`https://setlistaccess.azurewebsites.net/api/addSong?code=YN14BtxCJdU--IQ2PBNj6FYWPulzH84NynE7BkHeeTb_AzFuFnyXkg%3D%3D`, {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

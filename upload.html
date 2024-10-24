@@ -68,8 +68,8 @@
             formData.append('overwrite', overwriteCheckbox ? 'true' : 'false'); // Add the overwrite flag
 
             try {
-                const response = await fetch('http://localhost:7071/api/uploadsongs', {
-                //const response = await fetch('https://setlistaccess.azurewebsites.net/api/uploadsongs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D', {
+                //const response = await fetch('http://localhost:7071/api/uploadsongs', {
+                const response = await fetch('https://setlistaccess.azurewebsites.net/api/uploadsongs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D', {
                     method: 'POST',
                     body: formData
                 });
