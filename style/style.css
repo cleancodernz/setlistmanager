@@ -1,0 +1,188 @@
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  h1, h2, h3 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  h2, h3 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+  }
+  
+  p, label {
+    font-size: 1em;
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .container {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+  
+  /* Buttons */
+  button {
+    background-color: #2980b9;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #3498db;
+  }
+  
+  button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+  
+  /* Lists Styling */
+  .list-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  
+  .song-list {
+    background-color: #fff;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 45%;
+  }
+  
+  .song-tile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #ecf0f1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  .song-tile:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.02);
+  }
+  
+  .song-tile.active {
+    background-color: #27ae60;
+    color: #fff;
+  }
+  
+  .song-tile.inactive {
+    background-color: #e74c3c;
+    color: #fff;
+  }
+  
+  .song-tile span {
+    flex-grow: 1;
+    margin-left: 10px;
+  }
+  
+  /* Page Break Tile */
+  .page-break {
+    background-color: #f39c12;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  
+  .page-break:hover {
+    background-color: #e67e22;
+  }
+  
+  /* Top Section Styling */
+  #topSection {
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  #topSection input[type="text"], 
+  #topSection input[type="date"], 
+  #topSection input[type="number"] {
+    padding: 8px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    font-size: 1em;
+  }
+  
+  /* Save Changes Button */
+  #saveChanges {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto;
+  }
+  
+  /* Responsive Layout */
+  @media (max-width: 900px) {
+    .list-container {
+      flex-direction: column;
+    }
+  
+    .song-list {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 2em;
+    }
+  
+    button {
+      font-size: 0.9em;
+    }
+  
+    .song-tile {
+      padding: 8px;
+      font-size: 0.9em;
+    }
+  
+    .page-break {
+      padding: 10px;
+      font-size: 1em;
+    }
+  
+    #topSection input[type="text"], 
+    #topSection input[type="date"], 
+    #topSection input[type="number"] {
+      width: 100%;
+      font-size: 0.9em;
+    }
+  }
+  

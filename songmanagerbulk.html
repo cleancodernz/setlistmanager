@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setlist Manager</title>
+  <link rel="stylesheet" href="/style/style.css">
+  <style>
+    .list-container {
+      display: flex;
+      justify-content: space-between;
+    }
+    .song-list {
+      border: 1px solid #ccc;
+      width: 45%;
+      padding: 10px;
+    }
+    .song-tile {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #000;
+      cursor: pointer;
+    }
+    .inactive {
+      background-color: lightcoral;
+    }
+    .active {
+      background-color: lightgreen;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Manage Songs</h1>
+<div class="list-container">
+  <div class="song-list">
+    <h3>Active Songs (<span id="activeCount">0</span>)</h3>
+    <div id="activeSongs"></div>
+  </div>
+
+  <div class="song-list">
+    <h3>Inactive Songs (<span id="inactiveCount">0</span>)</h3>
+    <div id="inactiveSongs"></div>
+  </div>
+</div>
+
+<button id="saveChanges">Save Changes</button>
+
+<script type="module">
+
+  import config from './src/config.js';
+
+  let activeSongs = [];
+  let inactiveSongs = [];
+  let changes = [];  // To track the changes made
+
+  // Sample song data
+//   let songs = [
+//     { id: 1, name: "Song A", artist: "Artist 1", length: "3:30", release_year: 2020, active: true },
+//     { id: 2, name: "Song B", artist: "Artist 2", length: "4:00", release_year: 2019, active: false },
+//     { id: 3, name: "Song C", artist: "Artist 3", length: "5:00", release_year: 2018, active: true },
+//     { id: 4, name: "Song D", artist: "Artist 4", length: "2:45", release_year: 2021, active: false }
+//   ];
+
+  // Populate initial lists
+  async function loadSongs() {
+
+    try {
+
+        const activeSongUrl = config.getActiveSongUrl;
+        const inactiveSongUrl = config.getInactiveSongUrl;
+
+        const activeSongsResponse = await fetch(`${activeSongUrl}`); // Azure function endpoint for active songs        
+        const inactiveSongsResponse = await fetch(`${inactiveSongUrl}`); // Azure function endpoint for active songs
+
+        activeSongs = await activeSongsResponse.json();
+        inactiveSongs = await inactiveSongsResponse.json();
+
+        renderSongs();
+    } catch (error) {
+        console.error('Error fetching songs:', error);
+    }
+  }
+
+  // Render the active and inactive songs
+  function renderSongs() {
+    const activeSongsContainer = document.getElementById("activeSongs");
+    const inactiveSongsContainer = document.getElementById("inactiveSongs");
+    
+    activeSongsContainer.innerHTML = '';
+    inactiveSongsContainer.innerHTML = '';
+    
+    activeSongs.forEach(song => {
+      const songTile = createSongTile(song, true);
+      activeSongsContainer.appendChild(songTile);
+    });
+
+    inactiveSongs.forEach(song => {
+      const songTile = createSongTile(song, false);
+      inactiveSongsContainer.appendChild(songTile);
+    });
+
+    // Update counts
+    document.getElementById('activeCount').innerText = activeSongs.length;
+    document.getElementById('inactiveCount').innerText = inactiveSongs.length;
+  }
+
+  // Create a song tile (button) for the UI
+  function createSongTile(song, isActive) {
+    const songTile = document.createElement("div");
+    songTile.classList.add("song-tile", isActive ? "active" : "inactive");
+    songTile.textContent = `${song.song_name} - ${song.artist}`;
+    song.active = isActive;
+
+    // Click event to move song between active/inactive
+    songTile.onclick = function () {
+      toggleSongStatus(song);
+    };
+
+    return songTile;
+  }
+
+  // Toggle the song between active and inactive status
+  function toggleSongStatus(song) {
+    console.log(song.song_name + " : " + song.active);
+    if (song.active) {
+      song.active = false;
+      inactiveSongs.push(song);
+      activeSongs = activeSongs.filter(s => s.id !== song.id);
+    } else {
+      song.active = true;
+      activeSongs.push(song);
+      inactiveSongs = inactiveSongs.filter(s => s.id !== song.id);
+    }
+
+    // Track the change
+    const existingChange = changes.find(c => c.id === song.id);
+    if (existingChange) {
+      // If the song was already changed, just update its status
+      existingChange.active = song.active;
+    } else {
+      // Otherwise, add it to the changes array
+      changes.push({ id: song.id, active: song.active });
+    }
+
+    // Re-render the song lists
+    renderSongs();
+  }
+
+  // Save changes by calling the Python function
+  async function saveChanges() {
+    if (changes.length === 0) {
+      alert("No changes to save.");
+      return;
+    }
+
+    try {
+      // Replace the URL with your actual Azure Function endpoint
+      const uploadBulkUrl = config.uploadBulkUrl;
+
+      const response = await fetch(`${uploadBulkUrl}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ changes }),  // Send all changes at once
+      });
+
+      if (response.ok) {
+        alert("Changes saved successfully!");
+        changes = [];  // Clear the changes array after saving
+      } else {
+        alert("Failed to save changes.");
+      }
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
+  }
+
+  // Event listener for the save button
+  document.getElementById("saveChanges").addEventListener("click", saveChanges);
+
+  // Load songs initially
+  loadSongs();
+</script>
+
+</body>
+</html>
