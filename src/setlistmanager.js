@@ -112,10 +112,10 @@ async function addSongToDatabase(song) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                song_name: song.name,
-                artist: song.artists[0].name,
-                length: formatDuration(song.duration_ms),
-                release_year: new Date(song.album.release_date).getFullYear()
+                song_name: song.song_name,
+                artist: song.artist,
+                length: formatDuration(song.length),
+                release_year: new Date(song.album.release_year).getFullYear()
             })
         });
 
