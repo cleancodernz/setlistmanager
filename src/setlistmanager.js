@@ -72,7 +72,7 @@ document.getElementById('searchSpotifyButton').addEventListener('click', async f
     try {
         //const response = await fetch(`http://localhost:7071/api/searchSpotify?song=${searchQuery}`); // Azure function to search Spotify API
         //const response = await fetch(`http://localhost:7071/api/spotifyintegrationjson?query=${encodeURIComponent(searchQuery)}`);
-        const response = await fetch(`https://spotifyintegrationmach2.azurewebsites.net/api/spotifyintegrationjson?code=DyVZ8ue18beuku5Loss3S-CSEjrzhvAM4O-LSHTZV7o2AzFuA5aXAQ%3D%3D&query=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`https://spotifyintegrationmach2.azurewebsites.net/api/spotifyintegrationjson?code=8ki0tzc-U8KWcsh6UHeWkbxK8wCtfmfHO4OCqi13dEPsAzFuwrqKGg%3D%3D&query=${encodeURIComponent(searchQuery)}`);            
         const searchResults = await response.json();
 
         displaySpotifySearchResults(searchResults);
