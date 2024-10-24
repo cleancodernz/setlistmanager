@@ -90,7 +90,7 @@ function displaySpotifySearchResults(results) {
         const songTile = document.createElement('div');
         songTile.classList.add('song-tile');
         songTile.innerHTML = `
-            <span>${song.song_name} by ${song.artist} (${formatDuration(song.length)})</span>
+            <span>${song.song_name} by ${song.artist} released ${song.release_year} length:(${formatDuration(song.length)})</span>
             <button class="add-song-button">Add Song</button>
         `;
 
@@ -115,7 +115,7 @@ async function addSongToDatabase(song) {
                 song_name: song.song_name,
                 artist: song.artist,
                 length: formatDuration(song.length),
-                release_year: new Date(song.album.release_year).getFullYear()
+                release_year: new Date(song.release_year).getFullYear()
             })
         });
 
