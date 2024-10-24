@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setlist Management</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .list-container {
+            width: 40%;
+        }
+
+        .song-tile {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid black;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .add-song-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Setlist Management</h1>
+    <div class="container">
+        <div class="list-container">
+            <h2>Active Songs</h2>
+            <div id="activeSongsList">
+                <!-- Songs marked as active will be listed here -->
+            </div>
+        </div>
+
+        <div class="list-container">
+            <h2>Inactive Songs</h2>
+            <div id="inactiveSongsList">
+                <!-- Songs marked as inactive will be listed here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="add-song-container">
+        <h3>Add New Song</h3>
+        <label for="searchSong">Search Spotify:</label>
+        <input type="text" id="searchSong" placeholder="Enter song name...">
+        <button id="searchSpotifyButton">Search</button>
+        <div id="spotifySearchResults">
+            <!-- Spotify search results will be displayed here -->
+        </div>
+    </div>
+
+    <script src="/src/setlistmanager.js"></script>
+</body>
+</html>
