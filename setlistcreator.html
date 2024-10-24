@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setlist Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-    <link rel="stylesheet" href="/style/style.css">
-    <style>
+    <link rel="stylesheet" href="/style/setlistcreatorstyle.css">
+    <!-- <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
@@ -91,41 +91,43 @@
                 page-break-before: always; 
             }
         }
-    </style>
+    </style> -->
 </head>
 <body>
-    <h1>Setlist Manager</h1>
+    <div class="container">  
+        <h1>Setlist Creator</h1>
 
-    <div class="input-group">
-        <label for="venue">Venue Name:</label>
-        <input type="text" id="venue" />
-    </div>
-
-    <div class="input-group">
-        <label for="band">Band Name:</label>
-        <input type="text" id="band" />
-    </div>
-
-    <div class="input-group">
-        <label for="date">Gig Date:</label>
-        <input type="date" id="date" />
-    </div>
-
-    <div class="input-group">
-        <label for="numSets">Number of Sets:</label>
-        <input type="number" id="numSets" value="1" />
-    </div>
-
-    <div class="song-container">
-        <h2>Song List</h2>
-        <div class="tile-container" id="tileContainer">
-            <!-- Song tiles and page breaks will be injected here -->
+        <div class="input-group">
+            <label for="venue">Venue Name:</label>
+            <input type="text" id="venue" />
         </div>
+
+        <div class="input-group">
+            <label for="band">Band Name:</label>
+            <input type="text" id="band" />
+        </div>
+
+        <div class="input-group">
+            <label for="date">Gig Date:</label>
+            <input type="date" id="date" />
+        </div>
+
+        <div class="input-group">
+            <label for="numSets">Number of Sets:</label>
+            <input type="number" id="numSets" value="1" />
+        </div>
+
+        <div class="song-container">
+            <h2>Song List</h2>
+            <div class="tile-container" id="tileContainer">
+                <!-- Song tiles and page breaks will be injected here -->
+            </div>
+        </div>
+
+        <button class="btn" id="generatePdf">Generate PDF</button>
+
+        <div id="setlistOutput" class="setlist"></div>
     </div>
-
-    <button class="btn" id="generatePdf">Generate PDF</button>
-
-    <div id="setlistOutput" class="setlist"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>

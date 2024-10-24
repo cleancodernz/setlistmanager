@@ -2,24 +2,94 @@
 <head>
     <title>Setlist Manager</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="/style/style.css">
+    <link rel="stylesheet" href="/style/indexstyle.css">
 </head>
 <body>
+    <div id="container">
     <h1>Setlist Manager</h1>
-    <div id="setlist-container">
-        <ul id="setlist" class="song-list">
-            <!-- Songs will be dynamically loaded here -->
-        </ul>
+
+    <div class="button-container">
+        <a href="/upload.html"><i class="fas fa-upload"></i> Upload Songs</a>
+        <a href="/setlistcreator.html"><i class="fas fa-edit"></i> Setlist Creator</a>
+        <a href="/setlistmanager.html"><i class="fas fa-users"></i> Advanced Setlist Manager</a>
+        <a href="/setlistmanagerprintable.html"><i class="fas fa-print"></i> Printable Setlist</a>
+        <a href="/songmanager.html"><i class="fas fa-music"></i> Song Manager</a>
+        <a href="/songmanagerbulk.html"><i class="fas fa-copy"></i> Bulk Song Manager</a>
+      </div>
     </div>
-    
-    <a href="/upload.html">Upload Songs</a><br>
-    <a href="/setlistcreator.html">Basic Setlist Creator</a><br>
-    <a href="/setlistmanager.html">Advanced Setlist Creator</a><br>
-    <a href="/setlistmanagerprintable.html">Full Setlist Creator</a><br>
-    <a href="/songmanager.html">Song Manager</a><br>
-    <a href="/songmanagerbulk.html">Bulk Song Manager</a><br>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-    <script src="src/setlistanddisplay.js"></script>
+
+    <script type="module">
+        import config from './src/config.js';        
+    
+        const statusIndicator = document.createElement('div');
+        statusIndicator.style.margin = '20px 0';
+        statusIndicator.style.padding = '10px';
+        statusIndicator.style.fontSize = '1.2em';
+        statusIndicator.style.textAlign = 'center';
+        document.body.appendChild(statusIndicator);
+    
+        let databaseStatus = "offline"; // Default status
+    
+        async function checkDatabaseStatus() {
+            try {
+                const response = await fetch(config.checkDbStatusUrl);
+                const status = await response.text();
+                databaseStatus = status;
+                updateStatusIndicator(status);
+            } catch (error) {
+                console.error("Error checking database status:", error);
+                updateStatusIndicator("offline");
+            }
+        }
+    
+        // Function to wake the database by sending a query
+        async function wakeDatabase() {
+            try {
+                const response = await fetch(config.wakeDbUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ query: "SELECT 1" }), // Lightweight query
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to wake database.');
+                }
+                console.log("Database wake signal sent.");
+            } catch (error) {
+                console.error("Error waking database:", error);
+            }
+        }
+    
+        // Update the status indicator on the page based on the status
+        function updateStatusIndicator(status) {
+            switch (status) {
+                case "online":
+                    statusIndicator.style.backgroundColor = "green";
+                    statusIndicator.textContent = "Database is online";
+                    break;
+                case "paused":
+                    statusIndicator.style.backgroundColor = "orange";
+                    statusIndicator.textContent = "Database is paused, waking up...";
+                    wakeDatabase(); // Try to wake the database
+                    break;
+                case "resuming":
+                    statusIndicator.style.backgroundColor = "yellow";
+                    statusIndicator.textContent = "Database is resuming...";
+                    break;
+                default:
+                    statusIndicator.style.backgroundColor = "red";
+                    statusIndicator.textContent = "Database is offline or unavailable";
+                    break;
+            }
+        }
+    
+        // Check the database status every 30 seconds
+        setInterval(checkDatabaseStatus, 30000); // 30 seconds
+        checkDatabaseStatus(); // Initial check on page load
+    </script>
+
+    <!-- <script src="src/setlistanddisplay.js"></script> -->
+
 </body>
 </html>

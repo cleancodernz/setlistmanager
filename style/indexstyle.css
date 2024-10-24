@@ -1,0 +1,71 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 2.5em;
+    text-align: center;
+    margin-top: 20px;
+    color: #2c3e50;
+}
+
+#container {
+    width: 90%;
+    margin: 0 auto;
+    text-align: center; /* Center the text and buttons horizontally */
+}
+
+/* Flexbox for Button Container */
+.button-container {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center; /* Center the buttons horizontally */
+    gap: 15px; /* Space between buttons */
+    margin-top: 20px;
+}
+
+/* Button-like Links */
+a {
+    display: inline-block;
+    text-decoration: none;
+    padding: 15px 20px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #2980b9;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    width: 250px; /* Consistent button width */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+a:hover {
+    background-color: #3498db;
+}
+
+a:active {
+    background-color: #1f639e;
+}
+
+a i {
+    margin-right: 10px;
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    a {
+        width: 100%; /* On smaller screens, buttons will take full width */
+        margin: 10px 0;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+}

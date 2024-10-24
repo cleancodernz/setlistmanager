@@ -31,7 +31,11 @@ const config = {
   uploadBulkUrl:
             window.location.hostname === "localhost"
             ? "http://localhost:7071/api/updatesongactivebulk" // Local Azure Function URL
-            : "https://setlistaccess.azurewebsites.net/api/updatesongactivebulk?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D" // Production Azure Function URL            
+            : "https://setlistaccess.azurewebsites.net/api/updatesongactivebulk?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D", // Production Azure Function URL
+  checkDbStatusUrl:
+            window.location.hostname === "localhost"
+            ? "http://localhost:7071/api/checkdbstatus" // Local Azure Function URL
+            : "https://setlistaccess.azurewebsites.net/api/checkdbstatus?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D" // Production Azure Function URL              
 }
 
 
