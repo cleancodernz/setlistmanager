@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
 // Load songs from the database
 async function loadSongs() {
     try {
-        //const activeSongsResponse = await fetch('http://localhost:7071/api/get_songs?active=true'); // Azure function endpoint for active songs
-        const activeSongsResponse = await fetch('https://setlistaccess.azurewebsites.net/api/get_songs?code=2xAausN5pp5c_vju2mzlBf0vyOvHs1MakxgZwqxAxdbBAzFu2epvOw%3D%3D?active=true'); // Azure function endpoint for active songs
+        //const activeSongsResponse = await fetch('http://localhost:7071/api/get_songs?active=true'); // Azure function endpoint for active songs        
+        const activeSongsResponse = await fetch('https://setlistaccess.azurewebsites.net/api/get_songs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D?active=true'); // Azure function endpoint for active songs
         //const inactiveSongsResponse = await fetch('http://localhost:7071/api/get_songs?active=false'); // Azure function endpoint for inactive songs
-        const inactiveSongsResponse = await fetch('https://setlistaccess.azurewebsites.net/api/get_songs?code=2xAausN5pp5c_vju2mzlBf0vyOvHs1MakxgZwqxAxdbBAzFu2epvOw%3D%3D?active=false'); // Azure function endpoint for active songs
+        const inactiveSongsResponse = await fetch('https://setlistaccess.azurewebsites.net/api/get_songs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D?active=false'); // Azure function endpoint for active songs
 
         const activeSongs = await activeSongsResponse.json();
         const inactiveSongs = await inactiveSongsResponse.json();
