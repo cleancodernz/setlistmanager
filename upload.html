@@ -53,7 +53,9 @@
         <div id="message"></div>
     </div>
 
-    <script>
+    <script type="module">
+        import config from './src/config.js';
+
         document.getElementById('upload-form').addEventListener('submit', async function (event) {
             event.preventDefault();
             const csvFile = document.getElementById('csvFile').files[0];
@@ -68,8 +70,12 @@
             formData.append('overwrite', overwriteCheckbox ? 'true' : 'false'); // Add the overwrite flag
 
             try {
+                const uploadUrl = config.uploadUrl;
+                console.log('url: ' +uploadUrl);
+
                 //const response = await fetch('http://localhost:7071/api/uploadsongs', {
-                const response = await fetch('https://setlistaccess.azurewebsites.net/api/uploadsongs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D', {
+                //const response = await fetch('https://setlistaccess.azurewebsites.net/api/uploadsongs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D', {
+                const response = await fetch(`${uploadUrl}`, {
                     method: 'POST',
                     body: formData
                 });

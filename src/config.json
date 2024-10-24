@@ -1,0 +1,21 @@
+{
+    "dev": {
+      "addSongUrl": "http://localhost:7071/api/addSong",
+      "getAllSongsUrl": "http://localhost:7071/api/setlistaccess",
+      "spotifyIntegrationJsonUrl": "http://localhost:7071/api/spotifyintegrationjson?query=${encodeURIComponent(searchQuery)}",
+      "toggleSongUrl": "http://localhost:7071/api/toggleSongStatus",
+      "getActiveSongUrl": "http://localhost:7071/api/get_songs?active=true",
+      "getInactiveSongUrl": "http://localhost:7071/api/get_songs?active=false",
+      "uploadUrl": "http://localhost:7071/api/uploadsongs"
+    },
+    "prod": {
+      "addSongURL": "https://setlistaccess.azurewebsites.net/api/addSong?code=YN14BtxCJdU--IQ2PBNj6FYWPulzH84NynE7BkHeeTb_AzFuFnyXkg%3D%3D",
+      "getAllSongsUrl": "https://setlistaccess.azurewebsites.net/api/setlistaccess?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D",
+      "spotifyIntegrationJsonUrl": "https://spotifyintegrationmach2.azurewebsites.net/api/spotifyintegrationjson?code=8ki0tzc-U8KWcsh6UHeWkbxK8wCtfmfHO4OCqi13dEPsAzFuwrqKGg%3D%3D&query=${encodeURIComponent(searchQuery)}",
+      "toggleSongUrl": "https://setlistaccess.azurewebsites.net/api/toggleSongStatus?code=E_ExPxKmrlEs9UyOV6a9OhqqpzTYvjHmT_fAWy31iexnAzFurebEOA%3D%3D",
+      "getActiveSongUrl": "https://setlistaccess.azurewebsites.net/api/get_songs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D&active=true",
+      "getInactiveSongUrl": "https://setlistaccess.azurewebsites.net/api/get_songs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D&active=false",
+      "uploadUrl": "https://setlistaccess.azurewebsites.net/api/uploadsongs?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D"
+    }
+  }
+  

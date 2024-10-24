@@ -1,6 +1,10 @@
+import config from './config.js';
+
 // Fetch songs from the Azure Function
 async function fetchSongs() {
-    const response = await fetch('https://setlistaccess.azurewebsites.net/api/setlistaccess?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D');
+    const getAllSongSongUrl = config.getAllSongSongUrl;
+
+    const response = await fetch(`${getAllSongSongUrl}`);
     //const response = await fetch('http://localhost:7071/api/setlistaccess'); 
     const songs = await response.json();
     displaySongs(songs);
