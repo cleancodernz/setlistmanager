@@ -225,6 +225,7 @@
                 songTile.dataset.index = index;
                 songTile.textContent = `${song.song_name} - ${song.artist} (${song.length} min, ${song.release_year})`;
                 songTile.dataset.length = song.length;
+                console.log(`generating song-tile for: ${song.song_name}`);
                 tileContainer.appendChild(songTile);
             });
 

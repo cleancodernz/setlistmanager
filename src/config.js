@@ -35,7 +35,7 @@ const config = {
   checkDbStatusUrl:
             window.location.hostname === "localhost"
             ? "http://localhost:7071/api/checkdbstatus" // Local Azure Function URL
-            : "https://setlistaccess.azurewebsites.net/api/checkdbstatus?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D" // Production Azure Function URL              
+            : "https://setlistaccess.azurewebsites.net/api/checkdbstatus?code=F41koAeIxKb2LHORHlumzuQxdU8RiIKjbV87FVGbd_ccAzFu3S5Nfw%3D%3D" // Production Azure Function URL                
 }
 
 
