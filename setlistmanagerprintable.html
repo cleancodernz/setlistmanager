@@ -21,13 +21,14 @@
         }
 
         .song-tile, .page-break-tile {
+            flex: 1; /* Take up remaining space */
             padding: 10px;
             margin-bottom: 5px;
             border: 1px solid #ddd;
             cursor: grab;
             display: flex;
             justify-content: space-between;
-            width: 100%;
+            width: 80%;
         }
 
         .song-tile {
@@ -51,10 +52,13 @@
         }
 
         .icon {
+            position: right; /* Position the item absolutely */
             cursor: pointer;
             margin-left: 10px;
+            margin-right: 10px;
             font-size: 14px;
             color: red;
+            width: 20%; /* Set width to 20% */
         }
 
         .icon.add {
@@ -121,7 +125,7 @@
         <div class="list-container">
 
             <!-- <h3>Setlist</h3> -->
-            <h3>Setlist (<span id="setlistCount">0</span> songs)</h3>
+            <h3>Setlist<br>(<span id="setlistCount">0</span> songs)</h3>
 
             <div class="tile-container" id="setlistContainer">
                 <!-- Song tiles and page breaks will be injected here -->
@@ -132,7 +136,7 @@
         <div class="list-container">
 
             <!-- <h3>Available Songs</h3> -->
-            <h3>Available Songs (<span id="unusedCount">0</span> songs)</h3>
+            <h3>Available<br>(<span id="unusedCount">0</span> songs)</h3>
 
             <div class="tile-container" id="unusedSongsContainer">
                 <!-- Unused songs will be injected here -->
@@ -190,13 +194,13 @@
         }
 
         // Function to create a song tile element
-        function createSongTile(song, isInSetlist) {
-            const songTile = document.createElement('div');
+        function createSongTile(song, isInSetlist) {            
+            const songTile = document.createElement('div');               
             songTile.classList.add('song-tile');
             songTile.textContent = `${song.song_name} - ${song.artist} (${song.length} min)`;
             songTile.dataset.length = song.length;
 
-            const icon = document.createElement('span');
+            const icon = document.createElement('div');
             icon.classList.add('icon');
             icon.textContent = isInSetlist ? '❌' : '➕';
             icon.classList.toggle('add', !isInSetlist);

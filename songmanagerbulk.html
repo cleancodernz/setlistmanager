@@ -27,6 +27,35 @@
     .active {
       background-color: lightgreen;
     }
+
+    /* Mobile Styles */
+    @media (max-width: 600px) {
+        .header {
+            font-size: 1.5rem; /* Larger text on smaller screens */
+        }
+
+        .container {
+            padding: 0.5rem; /* Less padding */
+        }
+
+        input, button {
+            width: 95%; /* Increase width on smaller screens */
+        }
+
+        .song-list {
+            width: 90%;
+        }
+    }
+
+    /* Tablet Styles */
+    @media (min-width: 601px) and (max-width: 1024px) {
+        .header {
+            font-size: 2rem; /* Slightly larger text */
+        }
+        .song-list {
+            width: 45%;
+        }
+    }
   </style>
 </head>
 <body>
@@ -34,12 +63,12 @@
 <h1>Manage Songs</h1>
 <div class="list-container">
   <div class="song-list">
-    <h3>Active Songs (<span id="activeCount">0</span>)</h3>
+    <h3 align="center">Active Songs<br>(<span id="activeCount">0</span>)</h3>
     <div id="activeSongs"></div>
   </div>
 
   <div class="song-list">
-    <h3>Inactive Songs (<span id="inactiveCount">0</span>)</h3>
+    <h3 align="center">Inactive Songs<br>(<span id="inactiveCount">0</span>)</h3>
     <div id="inactiveSongs"></div>
   </div>
 </div>

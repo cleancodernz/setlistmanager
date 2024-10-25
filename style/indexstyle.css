@@ -58,14 +58,20 @@ a i {
     vertical-align: middle;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    a {
-        width: 100%; /* On smaller screens, buttons will take full width */
-        margin: 10px 0;
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .header {
+        font-size: 1.5rem; /* Larger text on smaller screens */
     }
 
-    h1 {
-        font-size: 2em;
+    .container {
+        padding: 0.5rem; /* Less padding */
+    }
+}
+
+/* Tablet Styles */
+@media (min-width: 601px) and (max-width: 1024px) {
+    .header {
+        font-size: 2rem; /* Slightly larger text */
     }
 }

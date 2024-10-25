@@ -34,7 +34,7 @@ function renderSongs(containerId, songs, isActive) {
         songTile.classList.add('song-tile');
         songTile.innerHTML = `
             <span>${song.song_name} by ${song.artist} (${song.length})</span>
-            <button class="toggle-status-button">${isActive ? 'Mark Inactive' : 'Mark Active'}</button>
+            <button class="toggle-status-button">${isActive ? 'Mark<br>Inactive' : 'Mark<br>Active'}</button>
         `;
 
         songTile.querySelector('.toggle-status-button').addEventListener('click', function () {

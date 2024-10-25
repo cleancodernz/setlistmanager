@@ -94,32 +94,34 @@
     </style> -->
 </head>
 <body>
-    <div class="container">  
+    <div class="container" align="center">  
         <h1>Setlist Creator</h1>
 
-        <div class="input-group">
-            <label for="venue">Venue Name:</label>
-            <input type="text" id="venue" />
+        <div>
+            <div class="input-group">
+                <label for="venue">Venue Name:</label>
+                <input type="text" id="venue" />
+            </div>
+
+            <div class="input-group">
+                <label for="band">Band Name:</label>
+                <input type="text" id="band" />
+            </div>
+
+            <div class="input-group">
+                <label for="date">Gigging Date:</label>
+                <input type="date" id="date" />
+            </div>
+
+            <div class="input-group">
+                <label for="numSets">Number of Sets:</label>
+                <input type="number" id="numSets" value="1" />
+            </div>
         </div>
 
-        <div class="input-group">
-            <label for="band">Band Name:</label>
-            <input type="text" id="band" />
-        </div>
-
-        <div class="input-group">
-            <label for="date">Gig Date:</label>
-            <input type="date" id="date" />
-        </div>
-
-        <div class="input-group">
-            <label for="numSets">Number of Sets:</label>
-            <input type="number" id="numSets" value="1" />
-        </div>
-
-        <div class="song-container">
+        <div>
             <h2>Song List</h2>
-            <div class="tile-container" id="tileContainer">
+            <div class="tile-container" id="tileContainer" align="center">
                 <!-- Song tiles and page breaks will be injected here -->
             </div>
         </div>

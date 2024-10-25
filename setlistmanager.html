@@ -20,14 +20,16 @@
             width: 45%;
         }
 
+        /* Song Tile and Page Break Styling */
         .song-tile, .page-break-tile {
-            padding: 10px;
-            margin-bottom: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
             border: 1px solid #ddd;
             cursor: grab;
             display: flex;
             justify-content: space-between;
-            width: 100%;
+            border-radius: 5px;
+            width: 80%;
         }
 
         .song-tile {
@@ -49,6 +51,7 @@
             background-color: #f9f9f9;
             min-height: 200px;
         }
+        
 
         .icon {
             cursor: pointer;
@@ -82,7 +85,7 @@
 
         <!-- Unused Songs -->
         <div class="list-container">
-            <h3>Available Songs</h3>
+            <h3>Available</h3>
             <div class="tile-container" id="unusedSongsContainer">
                 <!-- Unused songs will be injected here -->
             </div>
