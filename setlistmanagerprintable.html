@@ -145,9 +145,9 @@
     </div>
 
     <!-- Generate PDF Button -->
-    <div class="button-container">
+    <!-- <div class="button-container">
         <button id="generatePdfButton">Generate PDF</button>
-    </div>
+    </div> -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -199,6 +199,7 @@
             songTile.classList.add('song-tile');
             songTile.textContent = `${song.song_name} - ${song.artist} (${song.length} min)`;
             songTile.dataset.length = song.length;
+            songTile.dataset.name = song.song_name;
 
             const icon = document.createElement('div');
             icon.classList.add('icon');
@@ -242,8 +243,26 @@
                 unusedSongsContainer.appendChild(createSongTile(song, false));
             });
 
+            // Sort the list
+            sortAlphabetically(unusedSongsContainer)
+
             // Update unused count
             unusedCountDisplay.textContent = unusedSongs.length;
+        }
+
+        // Function to sort the items alphabetically
+        function sortAlphabetically(songContainer) {
+            const itemsArray = Array.from(songContainer.children);
+
+            // Sort items by text content
+            itemsArray.sort((a, b) => {
+                const textA = a.textContent.toUpperCase();
+                const textB = b.textContent.toUpperCase();
+                return textA.localeCompare(textB);
+            });
+
+            // Append sorted items back to the container
+            itemsArray.forEach(item => songContainer.appendChild(item));
         }
 
         // Added as default code doesn't work
@@ -444,6 +463,7 @@
             const venueName = venueNameInput.value || 'Unknown Venue';
             const bandName = bandNameInput.value || 'Unknown Band';
             const gigDate = gigDateInput.value || 'Unknown Date';
+            const numberSets = numberOfSetsInput.value || 'Unknown Set Length';
             let setCount = 1; // Counter for set numbers
             let setDuration = 0; // Duration accumulator
 
@@ -461,12 +481,12 @@
                             .page-break { page-break-before: always; }
                         </style>
                     </head>
-                    <body>
-                        <h1>Setlist</h1>
+                    <body>                        
                         <p><strong>Venue:</strong> ${venueName}</p>
                         <p><strong>Band:</strong> ${bandName}</p>
                         <p><strong>Date:</strong> ${gigDate}</p>
-                        <h2 class="set-title">Set ${setCount}</h2>
+                        <p><strong>Sets:</strong> ${numberSets}</p>
+                        <h2 class="set-title"><center><u>Set ${setCount}</u></center></h2>
             `);
 
             const setTiles = Array.from(setlistContainer.children);
@@ -495,7 +515,7 @@
                     setDuration += songLength; // Accumulate set duration
 
                     printWindow.document.write(`
-                            <p>${tile.textContent}</p>
+                            <p><center><h1>${tile.dataset.name}</h1></center></p>
                     `);
 
                     // Check for page break condition
@@ -504,7 +524,7 @@
                         setCount++; // Increment set counter
                         console.log('printable set duration: ' + setDuration);
                         printWindow.document.write(`                                
-                            <div class="duration">Total Duration: ${formatDuration(setDuration)}</div>
+                            <div class="duration"><center>Total Duration: ${formatDuration(setDuration)}</center></div>
                         `);
 
                         // add a page break and new set
@@ -512,7 +532,11 @@
                             printWindow.document.write(`   
                                 <div class="page-break"></div>
                                 <div class="set">
-                                <h2 class="set-title">Set ${setCount}</h2>
+                                <p><strong>Venue:</strong> ${venueName}</p>
+                                <p><strong>Band:</strong> ${bandName}</p>
+                                <p><strong>Date:</strong> ${gigDate}</p>
+                                <p><strong>Sets:</strong> ${numberSets}</p>
+                                <h2 class="set-title"><center><u>Set ${setCount}</u></center></h2>
                             `);
                         }  
 

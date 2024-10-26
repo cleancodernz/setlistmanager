@@ -35,6 +35,8 @@
     
         async function checkDatabaseStatus() {
             try {
+                statusIndicator.style.backgroundColor = "lightblue";
+                statusIndicator.textContent = "Checking if database is online...";
                 const response = await fetch(config.checkDbStatusUrl);
                 const status = await response.text();
                 databaseStatus = status;
@@ -48,7 +50,7 @@
         // Function to wake the database by sending a query
         async function wakeDatabase() {
             try {
-                const response = await fetch(`${getAllSongSongUrl}`);
+                const response = await fetch(`${config.getAllSongSongUrl}`);
                 if (!response.ok) {
                     throw new Error('Failed to wake database.');
                 }
