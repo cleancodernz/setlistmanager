@@ -129,10 +129,29 @@
       inactiveSongsContainer.appendChild(songTile);
     });
 
+    // Sort the containers
+    sortAlphabetically(activeSongsContainer);
+    sortAlphabetically(inactiveSongsContainer);
+
     // Update counts
     document.getElementById('activeCount').innerText = activeSongs.length;
     document.getElementById('inactiveCount').innerText = inactiveSongs.length;
   }
+
+  // Function to sort the items alphabetically
+  function sortAlphabetically(songContainer) {
+        const itemsArray = Array.from(songContainer.children);
+
+        // Sort items by text content
+        itemsArray.sort((a, b) => {
+            const textA = a.textContent.toUpperCase();
+            const textB = b.textContent.toUpperCase();
+            return textA.localeCompare(textB);
+        });
+
+        // Append sorted items back to the container
+        itemsArray.forEach(item => songContainer.appendChild(item));
+    }
 
   // Create a song tile (button) for the UI
   function createSongTile(song, isActive) {

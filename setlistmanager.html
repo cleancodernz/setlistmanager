@@ -190,6 +190,9 @@
             unusedSongs.forEach(song => {
                 unusedSongsContainer.appendChild(createSongTile(song, false));
             });
+
+            // Sort the list
+            sortAlphabetically(unusedSongsContainer);
         }
 
         // Render the setlist
@@ -215,6 +218,21 @@
         }
 
         // ############################## ADDED ALL THIS #######################################
+
+        // Function to sort the items alphabetically
+        function sortAlphabetically(songContainer) {
+            const itemsArray = Array.from(songContainer.children);
+
+            // Sort items by text content
+            itemsArray.sort((a, b) => {
+                const textA = a.textContent.toUpperCase();
+                const textB = b.textContent.toUpperCase();
+                return textA.localeCompare(textB);
+            });
+
+            // Append sorted items back to the container
+            itemsArray.forEach(item => songContainer.appendChild(item));
+        }
 
         function timeToSeconds(timeString) {
             // Remove the " min" part from the string
