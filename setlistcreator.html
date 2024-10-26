@@ -6,94 +6,35 @@
     <title>Setlist Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="/style/setlistcreatorstyle.css">
-    <!-- <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        label {
-            margin-right: 10px;
-        }
-
-        .song-tile, .page-break-tile {
-            padding: 10px;
-            margin-bottom: 5px;
-            border: 1px solid #ddd;
-            cursor: grab;
-            display: flex;
-            justify-content: space-between;
-            width: 50%;
-            margin: 0 auto;
-        }
-
-        .song-tile {
-            background-color: #f0f0f0;
-        }
-
-        .page-break-tile {
-            background-color: #ffcccb;
-            font-style: italic;
-            text-align: center;
-        }
-
-        .song-container {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .tile-container {
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background-color: #f9f9f9;
-            width: 50%;
-            margin: 0 auto;
-        }
-
-        .btn {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        .setlist {
-            margin-top: 20px;
-            font-size: 16px;
-        }
-
-        .duration {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        @media print {
-            .pagebreak { 
-                page-break-before: always; 
-            }
-        }
-    </style> -->
+    <link rel="stylesheet" href="/style/menu.css">
 </head>
 <body>
+
+    <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+    </script>
+    <!-- Hamburger Menu Icon -->
+    <div class="hamburger" onclick="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="navMenu">
+        <ul>
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/setlistcreator.html">Setlist Creator</a></li>
+            <li><a href="/setlistmanager.html">Setlist Manager</a></li>
+            <li><a href="/setlistmanagerprintable.html">Printable Setlist</a></li>
+            <li><a href="/songmanager.html">Song Manager</a></li>
+            <li><a href="/songmanagerbulk.html">Bulk Song Manager</a></li>
+        </ul>
+    </nav>
+
     <div class="container" align="center">  
         <h1>Setlist Creator</h1>
 

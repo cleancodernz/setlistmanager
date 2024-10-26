@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Setlist Manager</title>
   <link rel="stylesheet" href="/style/style.css">
+  <link rel="stylesheet" href="/style/menu.css">
   <style>
     .list-container {
       display: flex;
@@ -59,6 +60,30 @@
   </style>
 </head>
 <body>
+    <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+    </script>
+    <!-- Hamburger Menu Icon -->
+    <div class="hamburger" onclick="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="navMenu">
+        <ul>
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/setlistcreator.html">Setlist Creator</a></li>
+            <li><a href="/setlistmanager.html">Setlist Manager</a></li>
+            <li><a href="/setlistmanagerprintable.html">Printable Setlist</a></li>
+            <li><a href="/songmanager.html">Song Manager</a></li>
+            <li><a href="/songmanagerbulk.html">Bulk Song Manager</a></li>
+        </ul>
+    </nav>
 
 <h1>Manage Songs</h1>
 <div class="list-container">
